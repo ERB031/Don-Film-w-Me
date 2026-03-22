@@ -154,6 +154,43 @@
 - Native ad format that looks like a reel — labeled "Sponsored"
 - Only introduced after 500K+ DAU to avoid degrading experience
 
+### Business Discovery Portal — "Don Select" — $199 - $499/month
+- Premium B2B dashboard for brands, agencies, and production companies to find top-tier talent
+- **How it works**:
+  1. Business signs up for a Don Select account (separate from consumer app)
+  2. Gets access to a curated, searchable directory of top-performing talent
+  3. Can filter by role, location, engagement metrics, genre, availability, and rate range
+  4. Can build shortlists, share internally with team, and send direct booking requests
+- **Talent ranking signals** (used to surface "top accounts"):
+  - Match rate (high demand from other users)
+  - Portfolio quality score (completeness, video views, engagement)
+  - Booking completion rate and reviews
+  - Verification status
+  - Feed engagement (likes, follows, reel views)
+- **Tiers**:
+
+| | Select Starter ($199/mo) | Select Pro ($499/mo) |
+|--|--------------------------|----------------------|
+| Search & filter talent | Yes | Yes |
+| View full portfolios + rates | Yes | Yes |
+| Shortlists | 3 active | Unlimited |
+| Direct booking requests/month | 10 | 50 |
+| Dedicated account manager | No | Yes |
+| Talent exclusivity holds | No | 48-hour hold on up to 5 talent |
+| API access | No | Yes |
+| Custom talent reports | No | Monthly |
+
+- **Why talent benefits** (opt-in, not exploitative):
+  - Talent chooses to be discoverable by businesses (toggle in settings)
+  - Business inquiries are labeled and separated from regular matches — no inbox clutter
+  - Higher-budget bookings than typical peer-to-peer matches
+  - Exposure to brands and agencies they wouldn't find through swiping alone
+- **Why businesses pay**:
+  - Skip the swipe interface entirely — search and filter like a database
+  - See talent metrics that regular users can't (engagement rates, booking history, response time)
+  - Shortlist collaboration tools for teams
+  - Faster than scrolling a feed hoping to find the right person
+
 ### Industry Insights Reports — $500 - $2,000 per report
 - Anonymized, aggregated data sold to:
   - Production companies (talent availability trends, market rates by region)
@@ -171,8 +208,9 @@
 | Booking fee | 3% (processing only) | 5% service fee |
 | Priority booking | N/A (talent receives) | $7.99 each |
 | Boost | $2.99 | $4.99 |
+| Don Select (B2B) | N/A (talent is discovered) | $199 - $499/mo |
 
-Talent pays less across the board. This is intentional — talent is the scarce resource that makes the platform valuable. A platform full of clients with no talent to browse is worthless. The reverse is not true.
+Talent pays less across the board. This is intentional — talent is the scarce resource that makes the platform valuable. A platform full of clients with no talent to browse is worthless. The reverse is not true. Businesses pay the most — they extract the most value from the platform (direct access to vetted, ranked talent).
 
 ---
 
