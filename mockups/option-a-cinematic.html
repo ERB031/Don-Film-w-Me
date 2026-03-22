@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Option A: Dark &amp; Cinematic — Don Film w/ Me</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #1a1a2e; display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 30px 20px; font-family: 'Inter', sans-serif; }
+  h1 { font-family: 'Playfair Display', serif; color: #D4A843; font-size: 28px; margin-bottom: 8px; }
+  .subtitle { color: #888; font-size: 14px; margin-bottom: 24px; }
+
+  /* Screen tabs */
+  .screen-tabs { display: flex; gap: 6px; margin-bottom: 20px; flex-wrap: wrap; justify-content: center; }
+  .screen-tabs button { background: #2a2a2a; color: #999; border: 1px solid #333; padding: 8px 14px; border-radius: 20px; cursor: pointer; font-size: 12px; font-family: 'Inter', sans-serif; transition: all 0.2s; }
+  .screen-tabs button.active { background: #D4A843; color: #0D0D0D; border-color: #D4A843; font-weight: 600; }
+  .screen-tabs button:hover { border-color: #D4A843; }
+
+  /* Phone frame */
+  .phone { width: 375px; height: 812px; background: #0D0D0D; border-radius: 40px; border: 3px solid #333; overflow: hidden; position: relative; box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
+  .phone::before { content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 150px; height: 28px; background: #0D0D0D; border-radius: 0 0 18px 18px; z-index: 10; }
+
+  .screen { display: none; height: 100%; flex-direction: column; overflow-y: auto; }
+  .screen.active { display: flex; }
+  .screen::-webkit-scrollbar { display: none; }
+
+  /* Bottom nav */
+  .bottom-nav { position: absolute; bottom: 0; left: 0; right: 0; height: 80px; background: #0D0D0D; border-top: 1px solid #1A1A1A; display: flex; justify-content: space-around; align-items: center; padding-bottom: 16px; z-index: 5; }
+  .bottom-nav .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 10px; color: #555; cursor: pointer; }
+  .bottom-nav .nav-item.active { color: #D4A843; }
+  .bottom-nav .nav-item .icon { font-size: 20px; }
+
+  /* Common */
+  .gold { color: #D4A843; }
+  .terracotta { color: #C75B39; }
+  .warmwhite { color: #F5F0E8; }
+  .muted { color: #777; }
+  .tag { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 11px; border: 1px solid #D4A843; color: #D4A843; margin: 2px; }
+  .verified { display: inline-block; background: #D4A843; color: #0D0D0D; font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: 600; margin-left: 6px; }
+
+  /* === SWIPE SCREEN === */
+  .swipe-header { display: flex; justify-content: space-between; align-items: center; padding: 40px 20px 12px; }
+  .mode-toggle { background: #1A1A1A; color: #D4A843; border: 1px solid #D4A843; padding: 6px 16px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+  .filter-btn { color: #D4A843; font-size: 20px; background: none; border: none; cursor: pointer; }
+  .swipe-card { margin: 0 16px; border-radius: 20px; overflow: hidden; background: #1A1A1A; flex: 1; max-height: 560px; position: relative; }
+  .swipe-photo { width: 100%; height: 340px; background: linear-gradient(135deg, #2a1810, #1a0a05, #2a1810); display: flex; align-items: center; justify-content: center; }
+  .swipe-photo .placeholder { font-size: 48px; opacity: 0.3; }
+  .swipe-info { padding: 16px 20px; }
+  .swipe-name { font-family: 'Playfair Display', serif; font-size: 24px; color: #F5F0E8; }
+  .swipe-role { color: #D4A843; font-size: 14px; margin-top: 4px; }
+  .swipe-location { color: #777; font-size: 12px; margin-top: 4px; }
+  .swipe-headline { color: #aaa; font-size: 13px; margin-top: 8px; font-style: italic; }
+  .swipe-tags { margin-top: 10px; }
+  .swipe-rate { color: #D4A843; font-size: 14px; font-weight: 600; margin-top: 8px; }
+  .media-dots { display: flex; gap: 6px; justify-content: center; margin-top: 10px; }
+  .media-dots .dot { width: 8px; height: 8px; border-radius: 50%; background: #333; }
+  .media-dots .dot.active { background: #D4A843; }
+  .swipe-actions { display: flex; justify-content: center; gap: 24px; padding: 16px 0; }
+  .swipe-actions button { width: 60px; height: 60px; border-radius: 50%; border: 2px solid; display: flex; align-items: center; justify-content: center; font-size: 24px; cursor: pointer; background: #1A1A1A; transition: transform 0.2s; }
+  .swipe-actions button:hover { transform: scale(1.1); }
+  .btn-pass { border-color: #555; color: #555; }
+  .btn-super { border-color: #D4A843; color: #D4A843; }
+  .btn-like { border-color: #C75B39; color: #C75B39; }
+  .swipe-remaining { text-align: center; color: #555; font-size: 11px; padding-bottom: 90px; }
+
+  /* === PROFILE SCREEN === */
+  .profile-header { text-align: center; padding: 48px 20px 16px; }
+  .avatar { width: 90px; height: 90px; border-radius: 50%; background: linear-gradient(135deg, #D4A843, #C75B39); margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; font-size: 36px; color: #0D0D0D; }
+  .profile-name { font-family: 'Playfair Display', serif; font-size: 22px; color: #F5F0E8; }
+  .profile-role { color: #D4A843; font-size: 13px; margin-top: 4px; }
+  .profile-location { color: #777; font-size: 12px; margin-top: 2px; }
+  .mode-switch { display: flex; gap: 8px; justify-content: center; margin-top: 14px; }
+  .mode-switch .mode-pill { padding: 8px 24px; border-radius: 20px; font-size: 13px; font-weight: 600; cursor: pointer; }
+  .mode-pill.active { background: #D4A843; color: #0D0D0D; }
+  .mode-pill.inactive { background: #1A1A1A; color: #666; border: 1px solid #333; }
+  .stats-row { display: flex; justify-content: center; gap: 24px; padding: 16px 20px; border-top: 1px solid #1A1A1A; border-bottom: 1px solid #1A1A1A; margin: 12px 16px; }
+  .stat { text-align: center; }
+  .stat-val { font-family: 'Playfair Display', serif; font-size: 22px; color: #D4A843; }
+  .stat-label { font-size: 11px; color: #777; margin-top: 2px; }
+  .section { padding: 16px 20px; }
+  .section-title { font-family: 'Playfair Display', serif; font-size: 16px; color: #F5F0E8; margin-bottom: 12px; }
+  .portfolio-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .portfolio-thumb { aspect-ratio: 1; border-radius: 10px; background: #2a2a2a; display: flex; align-items: center; justify-content: center; font-size: 24px; color: #555; position: relative; }
+  .portfolio-thumb.video::after { content: '▶'; position: absolute; font-size: 18px; color: #D4A843; }
+  .credit-item { padding: 8px 0; border-bottom: 1px solid #1A1A1A; }
+  .credit-title { color: #F5F0E8; font-size: 13px; }
+  .credit-detail { color: #777; font-size: 11px; margin-top: 2px; }
+  .trust-bar { height: 6px; background: #1A1A1A; border-radius: 3px; margin-top: 8px; overflow: hidden; }
+  .trust-fill { height: 100%; background: linear-gradient(90deg, #C75B39, #D4A843); border-radius: 3px; }
+  .trust-badges { display: flex; gap: 8px; margin-top: 8px; }
+  .trust-badge { font-size: 11px; color: #D4A843; }
+  .avail-bar { display: flex; gap: 2px; margin-top: 8px; }
+  .avail-day { width: 10px; height: 20px; border-radius: 3px; }
+  .avail-day.open { background: #D4A843; }
+  .avail-day.booked { background: #333; }
+  .profile-scroll-pad { height: 100px; }
+
+  /* === FEED SCREEN === */
+  .feed-tabs { display: flex; padding: 40px 20px 0; gap: 0; }
+  .feed-tab { flex: 1; text-align: center; padding: 12px; font-size: 14px; font-weight: 600; color: #555; border-bottom: 2px solid transparent; cursor: pointer; }
+  .feed-tab.active { color: #D4A843; border-bottom-color: #D4A843; }
+  .feed-post { margin: 12px 16px; background: #1A1A1A; border-radius: 16px; overflow: hidden; }
+  .feed-author { display: flex; align-items: center; gap: 10px; padding: 12px 16px; }
+  .feed-avatar { width: 36px; height: 36px; border-radius: 50%; background: #333; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+  .feed-author-name { color: #F5F0E8; font-size: 13px; font-weight: 600; }
+  .feed-author-meta { color: #777; font-size: 11px; }
+  .feed-media { width: 100%; height: 220px; background: linear-gradient(135deg, #1a0a05, #2a1810); display: flex; align-items: center; justify-content: center; }
+  .feed-media.photo { background: linear-gradient(135deg, #0a1a1a, #1a2a2a); }
+  .play-icon { font-size: 40px; opacity: 0.5; }
+  .feed-caption { padding: 12px 16px 4px; color: #ccc; font-size: 13px; }
+  .feed-hashtags { padding: 0 16px 8px; }
+  .feed-hashtags span { color: #D4A843; font-size: 12px; }
+  .feed-engagement { display: flex; gap: 20px; padding: 8px 16px 14px; color: #777; font-size: 12px; }
+  .feed-engagement span { cursor: pointer; }
+  .feed-scroll-pad { height: 100px; }
+
+  /* === MESSAGES SCREEN === */
+  .messages-header { padding: 44px 20px 12px; display: flex; justify-content: space-between; align-items: center; }
+  .messages-header h2 { font-family: 'Playfair Display', serif; color: #F5F0E8; font-size: 22px; }
+  .new-matches { padding: 0 20px 16px; border-bottom: 1px solid #1A1A1A; }
+  .new-matches-label { font-size: 12px; color: #D4A843; font-weight: 600; margin-bottom: 10px; }
+  .matches-row { display: flex; gap: 14px; overflow-x: auto; }
+  .match-bubble { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .match-avatar { width: 56px; height: 56px; border-radius: 50%; border: 2px solid #D4A843; display: flex; align-items: center; justify-content: center; font-size: 20px; background: #1A1A1A; }
+  .match-name { font-size: 10px; color: #888; }
+  .convo-list { flex: 1; }
+  .convo-item { display: flex; align-items: center; gap: 12px; padding: 14px 20px; border-bottom: 1px solid #111; }
+  .convo-avatar { width: 48px; height: 48px; border-radius: 50%; background: #2a2a2a; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+  .convo-content { flex: 1; min-width: 0; }
+  .convo-name { color: #F5F0E8; font-size: 14px; font-weight: 600; }
+  .convo-preview { color: #777; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px; }
+  .convo-time { color: #555; font-size: 11px; flex-shrink: 0; }
+  .unread-dot { width: 8px; height: 8px; border-radius: 50%; background: #D4A843; flex-shrink: 0; }
+  .msg-scroll-pad { height: 100px; }
+
+  /* === MATCH CELEBRATION === */
+  .match-screen { display: none; height: 100%; background: radial-gradient(ellipse at center, #1a1508, #0D0D0D); flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 40px; }
+  .match-screen.active { display: flex; }
+  .match-title { font-family: 'Playfair Display', serif; font-size: 32px; color: #D4A843; margin-bottom: 30px; letter-spacing: 2px; }
+  .match-avatars { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; }
+  .match-av { width: 80px; height: 80px; border-radius: 50%; border: 3px solid #D4A843; display: flex; align-items: center; justify-content: center; font-size: 32px; background: #1A1A1A; }
+  .match-heart { font-size: 28px; color: #D4A843; }
+  .match-subtitle { color: #aaa; font-size: 15px; margin-bottom: 32px; }
+  .match-btn { width: 100%; padding: 16px; border-radius: 30px; border: none; font-size: 15px; font-weight: 600; cursor: pointer; margin-bottom: 12px; font-family: 'Inter', sans-serif; }
+  .match-btn.primary { background: #D4A843; color: #0D0D0D; }
+  .match-btn.secondary { background: transparent; border: 1px solid #D4A843; color: #D4A843; }
+  .match-keep { color: #777; font-size: 13px; margin-top: 16px; cursor: pointer; }
+
+  /* === BOOKING SCREEN === */
+  .booking-header { padding: 44px 20px 12px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1A1A1A; }
+  .booking-header h2 { font-family: 'Playfair Display', serif; color: #F5F0E8; font-size: 18px; }
+  .booking-cancel { color: #777; font-size: 14px; cursor: pointer; }
+  .booking-send { color: #D4A843; font-size: 14px; font-weight: 600; cursor: pointer; }
+  .booking-to { display: flex; align-items: center; gap: 10px; padding: 14px 20px; border-bottom: 1px solid #1A1A1A; }
+  .booking-to-av { width: 40px; height: 40px; border-radius: 50%; background: #2a2a2a; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+  .booking-to-name { color: #F5F0E8; font-size: 14px; font-weight: 600; }
+  .booking-to-role { color: #777; font-size: 12px; }
+  .booking-via { color: #D4A843; font-size: 11px; margin-top: 2px; }
+  .booking-form { padding: 16px 20px; }
+  .field-label { color: #888; font-size: 12px; font-weight: 600; margin-bottom: 6px; margin-top: 14px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .field-value { background: #1A1A1A; border: 1px solid #2a2a2a; border-radius: 10px; padding: 12px 14px; color: #F5F0E8; font-size: 14px; width: 100%; }
+  .field-value.textarea { min-height: 80px; line-height: 1.5; }
+  .date-pills { display: flex; gap: 8px; }
+  .date-pill { background: #1A1A1A; border: 1px solid #D4A843; border-radius: 20px; padding: 8px 16px; color: #D4A843; font-size: 13px; }
+  .rate-check { color: #D4A843; font-size: 12px; margin-top: 6px; }
+  .avail-check { color: #4ade80; font-size: 12px; margin-top: 6px; }
+  .booking-scroll-pad { height: 40px; }
+</style>
+</head>
+<body>
+
+<h1>Option A: Dark &amp; Cinematic</h1>
+<p class="subtitle">Film set at golden hour. Dark backgrounds, gold accents, cinematic type.</p>
+
+<div class="screen-tabs">
+  <button class="active" onclick="showScreen('swipe')">Swipe</button>
+  <button onclick="showScreen('profile')">Profile</button>
+  <button onclick="showScreen('feed')">Feed</button>
+  <button onclick="showScreen('messages')">Messages</button>
+  <button onclick="showScreen('match')">Match!</button>
+  <button onclick="showScreen('booking')">Booking</button>
+</div>
+
+<div class="phone">
+
+  <!-- SWIPE SCREEN -->
+  <div class="screen active" id="screen-swipe">
+    <div class="swipe-header">
+      <span class="mode-toggle">CLIENT MODE</span>
+      <button class="filter-btn">☰</button>
+    </div>
+    <div class="swipe-card">
+      <div class="swipe-photo"><span class="placeholder">🎬</span></div>
+      <div class="swipe-info">
+        <div class="swipe-name">Sarah Chen, 28 <span class="verified">VERIFIED</span></div>
+        <div class="swipe-role">DP / Cinematographer</div>
+        <div class="swipe-location">📍 Los Angeles • 3 mi</div>
+        <div class="swipe-headline">"Narrative & commercial cinematography"</div>
+        <div class="swipe-tags">
+          <span class="tag">Commercial</span>
+          <span class="tag">Narrative</span>
+          <span class="tag">Music Video</span>
+        </div>
+        <div class="swipe-rate">$800 – $1,200 / day</div>
+        <div class="media-dots">
+          <span class="dot active"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span>
+        </div>
+      </div>
+    </div>
+    <div class="swipe-actions">
+      <button class="btn-pass">✕</button>
+      <button class="btn-super">⭐</button>
+      <button class="btn-like">♥</button>
+    </div>
+    <div class="swipe-remaining">87 / 100 swipes remaining</div>
+
+    <div class="bottom-nav">
+      <div class="nav-item active"><span class="icon">🎬</span>Discover</div>
+      <div class="nav-item"><span class="icon">🔍</span>Search</div>
+      <div class="nav-item"><span class="icon">📰</span>Feed</div>
+      <div class="nav-item"><span class="icon">💬</span>Chat</div>
+      <div class="nav-item"><span class="icon">👤</span>Profile</div>
+    </div>
+  </div>
+
+  <!-- PROFILE SCREEN -->
+  <div class="screen" id="screen-profile">
+    <div class="profile-header">
+      <div class="avatar">JR</div>
+      <div class="profile-name">Jordan Rivera <span class="verified">VERIFIED</span></div>
+      <div class="profile-role">Director / Producer</div>
+      <div class="profile-location">📍 Los Angeles • Active today</div>
+      <div class="mode-switch">
+        <div class="mode-pill active">Talent</div>
+        <div class="mode-pill inactive">Client</div>
+      </div>
+    </div>
+    <div class="stats-row">
+      <div class="stat"><div class="stat-val">24</div><div class="stat-label">Matches</div></div>
+      <div class="stat"><div class="stat-val">8</div><div class="stat-label">Bookings</div></div>
+      <div class="stat"><div class="stat-val">4.8</div><div class="stat-label">Rating</div></div>
+    </div>
+    <div class="section">
+      <div class="section-title">Portfolio</div>
+      <div class="portfolio-grid">
+        <div class="portfolio-thumb video">🎞</div>
+        <div class="portfolio-thumb video">🎞</div>
+        <div class="portfolio-thumb">📷</div>
+        <div class="portfolio-thumb">📷</div>
+        <div class="portfolio-thumb video">🎞</div>
+        <div class="portfolio-thumb">📷</div>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-title">Credits</div>
+      <div class="credit-item"><div class="credit-title">"Neon Dreams" (2025)</div><div class="credit-detail">Director — Short Film</div></div>
+      <div class="credit-item"><div class="credit-title">"Fresh Roast" (2024)</div><div class="credit-detail">Producer — Commercial</div></div>
+      <div class="credit-item"><div class="credit-title">"East of Normal" (2024)</div><div class="credit-detail">Director — Music Video</div></div>
+    </div>
+    <div class="section">
+      <div class="section-title">Rate Card</div>
+      <div style="color: #D4A843; font-size: 18px; font-weight: 600;">$1,500 – $3,000 / day</div>
+      <div style="color: #777; font-size: 12px; margin-top: 4px;">Visibility: Matches only 🔒</div>
+    </div>
+    <div class="section">
+      <div class="section-title">Availability — March 2026</div>
+      <div class="avail-bar">
+        <div class="avail-day open"></div><div class="avail-day open"></div><div class="avail-day booked"></div><div class="avail-day booked"></div><div class="avail-day open"></div><div class="avail-day open"></div><div class="avail-day open"></div>
+        <div class="avail-day open"></div><div class="avail-day open"></div><div class="avail-day booked"></div><div class="avail-day booked"></div><div class="avail-day open"></div><div class="avail-day open"></div><div class="avail-day open"></div>
+        <div class="avail-day booked"></div><div class="avail-day booked"></div><div class="avail-day open"></div><div class="avail-day open"></div><div class="avail-day open"></div><div class="avail-day open"></div><div class="avail-day open"></div>
+        <div class="avail-day open"></div><div class="avail-day booked"></div><div class="avail-day booked"></div><div class="avail-day open"></div><div class="avail-day open"></div><div class="avail-day open"></div><div class="avail-day open"></div>
+        <div class="avail-day open"></div><div class="avail-day open"></div>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-title">Trust Score</div>
+      <div style="color: #F5F0E8; font-size: 14px;">82 / 100</div>
+      <div class="trust-bar"><div class="trust-fill" style="width:82%"></div></div>
+      <div class="trust-badges">
+        <span class="trust-badge">✓ Phone</span>
+        <span class="trust-badge">✓ ID</span>
+        <span class="trust-badge">✓ Portfolio</span>
+      </div>
+    </div>
+    <div class="profile-scroll-pad"></div>
+
+    <div class="bottom-nav">
+      <div class="nav-item"><span class="icon">🎬</span>Discover</div>
+      <div class="nav-item"><span class="icon">🔍</span>Search</div>
+      <div class="nav-item"><span class="icon">📰</span>Feed</div>
+      <div class="nav-item"><span class="icon">💬</span>Chat</div>
+      <div class="nav-item active"><span class="icon">👤</span>Profile</div>
+    </div>
+  </div>
+
+  <!-- FEED SCREEN -->
+  <div class="screen" id="screen-feed">
+    <div class="feed-tabs">
+      <div class="feed-tab active">For You</div>
+      <div class="feed-tab">Following</div>
+    </div>
+    <div class="feed-post">
+      <div class="feed-author">
+        <div class="feed-avatar">MR</div>
+        <div>
+          <div class="feed-author-name">Marcus Rivera <span class="verified">VERIFIED</span></div>
+          <div class="feed-author-meta">Director • Los Angeles • 2h</div>
+        </div>
+      </div>
+      <div class="feed-media"><span class="play-icon">▶</span></div>
+      <div class="feed-caption">BTS from yesterday's music video shoot 🎥</div>
+      <div class="feed-hashtags"><span>#musicvideo</span> <span>#bts</span> <span>#director</span></div>
+      <div class="feed-engagement">
+        <span>♥ 234</span>
+        <span>💬 18</span>
+        <span>↗ 5</span>
+      </div>
+    </div>
+    <div class="feed-post">
+      <div class="feed-author">
+        <div class="feed-avatar">PP</div>
+        <div>
+          <div class="feed-author-name">Priya Patel</div>
+          <div class="feed-author-meta">Model • New York • 5h</div>
+        </div>
+      </div>
+      <div class="feed-media photo"><span style="font-size:48px; opacity:0.3;">📷</span></div>
+      <div class="feed-caption">New editorial with @VogueMag</div>
+      <div class="feed-hashtags"><span>#editorial</span> <span>#fashion</span> <span>#model</span></div>
+      <div class="feed-engagement">
+        <span>♥ 891</span>
+        <span>💬 42</span>
+        <span>↗ 23</span>
+      </div>
+    </div>
+    <div class="feed-scroll-pad"></div>
+
+    <div class="bottom-nav">
+      <div class="nav-item"><span class="icon">🎬</span>Discover</div>
+      <div class="nav-item"><span class="icon">🔍</span>Search</div>
+      <div class="nav-item active"><span class="icon">📰</span>Feed</div>
+      <div class="nav-item"><span class="icon">💬</span>Chat</div>
+      <div class="nav-item"><span class="icon">👤</span>Profile</div>
+    </div>
+  </div>
+
+  <!-- MESSAGES SCREEN -->
+  <div class="screen" id="screen-messages">
+    <div class="messages-header">
+      <h2>Messages</h2>
+      <span class="gold" style="font-size:14px; cursor:pointer;">Edit</span>
+    </div>
+    <div class="new-matches">
+      <div class="new-matches-label">New Matches</div>
+      <div class="matches-row">
+        <div class="match-bubble"><div class="match-avatar">AC</div><div class="match-name">Ava</div></div>
+        <div class="match-bubble"><div class="match-avatar">MO</div><div class="match-name">Mo</div></div>
+        <div class="match-bubble"><div class="match-avatar">JY</div><div class="match-name">Jay</div></div>
+        <div class="match-bubble"><div class="match-avatar">KM</div><div class="match-name">Kim</div></div>
+        <div class="match-bubble"><div class="match-avatar">LW</div><div class="match-name">Lee</div></div>
+      </div>
+    </div>
+    <div class="convo-list">
+      <div class="convo-item">
+        <div class="convo-avatar">SC</div>
+        <div class="convo-content">
+          <div class="convo-name">Sarah Chen</div>
+          <div class="convo-preview">Hey! Loved your reel from the music...</div>
+        </div>
+        <div style="display:flex; flex-direction:column; align-items:flex-end; gap:6px;">
+          <div class="convo-time">2m</div>
+          <div class="unread-dot"></div>
+        </div>
+      </div>
+      <div class="convo-item">
+        <div class="convo-avatar">MR</div>
+        <div class="convo-content">
+          <div class="convo-name">Marcus Rivera</div>
+          <div class="convo-preview">Sounds great, let me check my availability</div>
+        </div>
+        <div class="convo-time">1h</div>
+      </div>
+      <div class="convo-item">
+        <div class="convo-avatar">PP</div>
+        <div class="convo-content">
+          <div class="convo-name">Priya Patel</div>
+          <div class="convo-preview">📋 Booking: "Spring Campaign Shoot"</div>
+        </div>
+        <div class="convo-time">3h</div>
+      </div>
+      <div class="convo-item">
+        <div class="convo-avatar">AK</div>
+        <div class="convo-content">
+          <div class="convo-name">Alex Kim</div>
+          <div class="convo-preview">Thanks! Talk soon.</div>
+        </div>
+        <div class="convo-time">1d</div>
+      </div>
+    </div>
+    <div class="msg-scroll-pad"></div>
+
+    <div class="bottom-nav">
+      <div class="nav-item"><span class="icon">🎬</span>Discover</div>
+      <div class="nav-item"><span class="icon">🔍</span>Search</div>
+      <div class="nav-item"><span class="icon">📰</span>Feed</div>
+      <div class="nav-item active"><span class="icon">💬</span>Chat</div>
+      <div class="nav-item"><span class="icon">👤</span>Profile</div>
+    </div>
+  </div>
+
+  <!-- MATCH SCREEN -->
+  <div class="screen match-screen" id="screen-match">
+    <div class="match-title">✨ IT'S A MATCH ✨</div>
+    <div class="match-avatars">
+      <div class="match-av">JR</div>
+      <div class="match-heart">💛</div>
+      <div class="match-av">SC</div>
+    </div>
+    <div class="match-subtitle">You and Sarah Chen liked each other!</div>
+    <button class="match-btn primary">Send a Message</button>
+    <button class="match-btn secondary">Send Booking Request</button>
+    <div class="match-keep">Keep Swiping →</div>
+  </div>
+
+  <!-- BOOKING SCREEN -->
+  <div class="screen" id="screen-booking">
+    <div class="booking-header">
+      <span class="booking-cancel">Cancel</span>
+      <h2>New Booking</h2>
+      <span class="booking-send">Send</span>
+    </div>
+    <div class="booking-to">
+      <div class="booking-to-av">SC</div>
+      <div>
+        <div class="booking-to-name">Sarah Chen</div>
+        <div class="booking-to-role">DP / Cinematographer</div>
+        <div class="booking-via">Via: Match 💛</div>
+      </div>
+    </div>
+    <div class="booking-form">
+      <div class="field-label">Project Title</div>
+      <div class="field-value">Spring Music Video — DP</div>
+
+      <div class="field-label">Type</div>
+      <div class="field-value">Music Video</div>
+
+      <div class="field-label">Description</div>
+      <div class="field-value textarea">Looking for a DP to shoot a 3-min music video for indie artist. Two-day shoot, mix of narrative scenes and live performance footage. Anamorphic look preferred.</div>
+
+      <div class="field-label">Dates</div>
+      <div class="date-pills">
+        <span class="date-pill">Apr 12, 2026</span>
+        <span class="date-pill">Apr 13, 2026</span>
+      </div>
+      <div class="avail-check">✅ Sarah is available on these dates</div>
+
+      <div class="field-label">Location</div>
+      <div class="field-value">Downtown LA + Griffith Park</div>
+
+      <div class="field-label">Proposed Rate</div>
+      <div class="field-value">$1,000 / day</div>
+      <div class="rate-check">✅ Within Sarah's range ($800 – $1,200/day)</div>
+
+      <div style="color:#555; font-size:11px; margin-top:16px; text-align:center;">Expires in 7 days</div>
+    </div>
+    <div class="booking-scroll-pad"></div>
+  </div>
+
+</div>
+
+<script>
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + name).classList.add('active');
+  document.querySelectorAll('.screen-tabs button').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+}
+</script>
+
+</body>
+</html>
